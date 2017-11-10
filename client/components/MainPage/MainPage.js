@@ -1,4 +1,9 @@
 import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
+
+import { getItemsGroup } from '../../actions/items';
+
+import Loader from 'material-ui/CircularProgress';
 
 import Groups from '../Groups/Groups';
 import GroupItems from '../GroupItems/GroupItems';
@@ -12,7 +17,9 @@ class MainPage extends React.Component {
         super(props);
 
         this.state = {
-            openModal: false,
+            openListItems: false,
+            checkGroup: false,
+            listItemsLoading: false,
             globalError: this.props.globalError
         };
     };
@@ -25,6 +32,13 @@ class MainPage extends React.Component {
         }
     };
 
+    openListItem = (id) => {
+        this.setState({ listItemsLoading: true });
+        this.props.getItemsGroup(id)
+            .then(() => this.setState({ listItemsLoading: false }))
+            .catch(() => this.setState({ listItemsLoading: false }))
+    };
+
     render() {
         return (
             <MuiThemeProvider>
@@ -32,8 +46,14 @@ class MainPage extends React.Component {
                     <h2>Item collection list</h2>
                     {this.state.globalError && <div className="error">{this.state.globalError}</div>}
                     <div className="content">
-                        <Groups />
-                        <GroupItems />
+                        <Groups
+                            openListItem={this.openListItem}
+                            checkGroup={this.state.checkGroup}
+                        />
+                        <GroupItems
+                            open={this.state.openListItems}
+                            loading={this.state.listItemsLoading}
+                        />
                     </div>
 
                     {this.state.openModal && <ModalItem />}
@@ -43,10 +63,11 @@ class MainPage extends React.Component {
     }
 };
 
+
 function mapState(state) {
     return {
         globalError: state.globalError
     }
 };
 
-export default connect(mapState)(MainPage);
+export default connect(mapState, { getItemsGroup })(MainPage);

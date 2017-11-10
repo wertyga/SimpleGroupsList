@@ -17,6 +17,7 @@ import api from './api';
 // ****************** Import routes *************
 
 import groups from './routes/groups';
+import items from './routes/items';
 
 //***********************************************
 
@@ -98,6 +99,7 @@ if (dev ? false : cluster.isMaster) {
     //******************************** Routes ***************************
 
     app.use('/api/groups', groups);
+    app.use('/api/items', items);
 
     app.get('/*', (req, res) => {
         res.sendFile(path.join(__dirname, 'index.html'))
