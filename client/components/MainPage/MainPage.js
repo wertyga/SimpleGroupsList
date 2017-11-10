@@ -4,6 +4,7 @@ import { createSelector } from 'reselect';
 import { getItemsGroup } from '../../actions/items';
 
 import Loader from 'material-ui/CircularProgress';
+import Divider from 'material-ui/Divider';
 
 import Groups from '../Groups/Groups';
 import GroupItems from '../GroupItems/GroupItems';
@@ -18,7 +19,6 @@ class MainPage extends React.Component {
 
         this.state = {
             openListItems: false,
-            checkGroup: false,
             listItemsLoading: false,
             globalError: this.props.globalError
         };
@@ -48,12 +48,8 @@ class MainPage extends React.Component {
                     <div className="content">
                         <Groups
                             openListItem={this.openListItem}
-                            checkGroup={this.state.checkGroup}
                         />
-                        <GroupItems
-                            open={this.state.openListItems}
-                            loading={this.state.listItemsLoading}
-                        />
+
                     </div>
 
                     {this.state.openModal && <ModalItem />}
@@ -63,10 +59,14 @@ class MainPage extends React.Component {
     }
 };
 
+const mainState = createSelector(
+    state => state.globalError,
+    globalError => globalError
+);
 
 function mapState(state) {
     return {
-        globalError: state.globalError
+        globalError: mainState(state)
     }
 };
 

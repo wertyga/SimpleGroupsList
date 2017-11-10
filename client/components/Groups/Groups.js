@@ -1,4 +1,5 @@
 import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 
 import { fetchGroups } from '../../actions/groups.js';
 
@@ -13,6 +14,9 @@ import {
 } from 'material-ui/Table';
 import { List } from 'material-ui/List';
 import Menu from 'material-ui/Menu';
+import MenuItem from 'material-ui/MenuItem';
+import Divider from 'material-ui/Divider';
+import Checkbox from 'material-ui/Checkbox';
 
 import ListItem from '../TableRow/TableRow';
 import loading from '../common/loader';
@@ -25,14 +29,9 @@ class Groups extends React.Component {
     constructor(props) {
         super(props);
 
-        const initialState = {};
-        const arr = this.props.groups.forEach(item => initialState[item.id] = false) || [];
-
-        this.initialState = initialState;
-
         this.state = {
             isLoading: false,
-            checkGroup: this.initialState
+            selectItem: 0
         };
     };
     
@@ -45,13 +44,12 @@ class Groups extends React.Component {
             .catch(() => this.setState({ isLoading: false }))
     };
 
-    openListItem = id => {
-        this.setState({
-            checkGroup: {
-                ...this.initialState,
-                [id]: true
-            }
-        });
+    selectListItem = i => {
+        return this.state.selectItem === i;
+    };
+
+    onClickListItem = (id, i) => {
+        this.setState({ selectItem: i });
 
         this.props.openListItem(id);
     };
@@ -59,25 +57,30 @@ class Groups extends React.Component {
     render() {
         
         const main = (
-            <Menu>
-                    {this.props.groups.length > 0 ? this.props.groups.map((item, i) =>
-                        <ListItem
-                            id={item.id}
-                            key={i}
-                            name={item.name}
-                            count={item.count + ''}
-                            openListItem={this.openListItem}
-                            checkGroup={this.state.checkGroup[item.id]}
-                        />
-                    ) :
-                        <div style={{
-                            marginTop: 20
-                        }}>
-                            No groups available
+            <div>
+                <MenuItem
+                    primaryText="Name"
+                    secondaryText="Count"
+                    // style={{ color: inlineStyles.fontColorFade }}
+                    disabled={true}
+                    leftIcon={<Checkbox disabled={true}/>}
+                />
+                <Divider style={{ width: '100%' }}/>
+                {this.props.groups.length > 0 ?
+                    this.props.groups.map((item, i) =>
+                        <div key={i} className="listItem">
+                            <MenuItem
+                                primaryText={item.name}
+                                secondaryText={item.count +''}
+                                leftIcon={<Checkbox checked={this.state.selectItem === i}/>}
+                                onClick={(e) => this.onClickListItem(item.id, i)}
+                            />
+                            <Divider />
+                           
                         </div>
-                    }
-
-            </Menu>
+                    ) : <div className="no-groups">No groups find</div>
+                }
+            </div>
         );
 
         
@@ -89,9 +92,14 @@ class Groups extends React.Component {
     };
 };
 
+const GroupProps = createSelector(
+    state => state.groups,
+    groups => groups
+);
+
 function mapState(state) {
     return {
-        groups: state.groups || []
+        groups: GroupProps(state) || []
     }
 };
 

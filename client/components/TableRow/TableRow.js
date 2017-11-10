@@ -31,7 +31,6 @@ class TableSelf extends React.Component {
                     primaryText={this.props.name}
                     leftIcon={
                         <Checkbox
-                            switched={true}
                             checked={this.props.checkGroup}
                         />
                     }
