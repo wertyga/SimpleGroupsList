@@ -1,8 +1,31 @@
 @import '../../styles/vars'
 
 .Groups
-  flex-grow: 1
   min-height: 30vh
+  width: 100%
+  .group-wrapper
+    display: flex
+  .groups-main
+    width: 100%
+    box-sizing: border-box
+  .no-groups
+    text-align: center
+    margin-top: 20px
+  .largeScreen
+    display: flex
+    align-items: center
+    justify-content: center
+    max-height: 50vh
+    width: 70%
+    box-sizing: border-box
+    padding-left: 20px
+    overflow-y: auto
+    border-left: 1px solid $dividerColor
+    margin-left: 10px
+    margin-top: 48px
+    .loading
+      align-self: center
+
   p
     display: inline-block
   .header
@@ -12,3 +35,6 @@
       padding: 10px
       &:first-child
         padding-left: 0
+
+
+@import '../../styles/media'

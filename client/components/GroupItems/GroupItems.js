@@ -62,7 +62,7 @@ export default class GroupItems extends React.Component {
                                     </div>
                                 }
                                 fullWidth={true}
-                                style={{ display: 'block' }}
+                                style={{ display: 'block', fontSize: 12 }}
                             />
 
                         ) :

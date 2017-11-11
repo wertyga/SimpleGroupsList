@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import Media from 'react-responsive';
 
 import { getItemsGroup } from '../../actions/items';
 
@@ -22,18 +23,18 @@ class ListItem extends React.Component {
         };
     };
 
-    componentDidUpdate(prevProps, prevState) {
-        if(this.props.checked !== prevProps.checked && this.props.checked) {
-            this.fetchItems();
-        }
-    };
-
-    componentDidMount() {
-        if(this.props.checked) {
-            this.fetchItems();
-        }
-
-    };
+    // componentDidUpdate(prevProps, prevState) {
+    //     if(this.props.checked !== prevProps.checked && this.props.checked) {
+    //         this.fetchItems();
+    //     }
+    // };
+    //
+    // componentDidMount() {
+    //     if(this.props.checked) {
+    //         this.fetchItems();
+    //     }
+    //
+    // };
 
     fetchItems = () => {
         this.setState({ loading: true });
@@ -50,28 +51,33 @@ class ListItem extends React.Component {
                     secondaryText={this.props.count +''}
                     leftIcon={<Checkbox checked={this.props.checked}/>}
                     onClick={this.props.onClick}
+                    style={{
+                        fontSize: 13
+                    }}
                 />
                 {!this.props.checked && <Divider />}
-                <div className='lists'>
-                    <div className={this.props.checked ? 'listWrapper open' : 'listWrapper'}>
-                        {this.props.checked && <GroupItems loading={this.state.loading} items={this.props.items}/>}
+                <Media maxWidth={1000}>
+                    <div className='lists'>
+                        <div className={this.props.checked ? 'listWrapper open' : 'listWrapper'}>
+                            {this.props.checked && <GroupItems loading={this.props.loadItems} items={this.props.items}/>}
+                        </div>
                     </div>
-                </div>
+                </Media>
             </div>
         );
     }
 };
 
-const Selector = createSelector(
-    state => state.items,
-    items => items
-);
+// const Selector = createSelector(
+//     state => state.items,
+//     items => items
+// );
+//
+// function mapState(state) {
+//     return {
+//         items: Selector(state)
+//     }
+// };
 
-function mapState(state) {
-    return {
-        items: Selector(state)
-    }
-};
-
-export default connect(mapState, { getItemsGroup })(ListItem)
+export default ListItem
 
