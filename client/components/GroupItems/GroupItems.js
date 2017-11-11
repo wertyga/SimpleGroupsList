@@ -1,59 +1,76 @@
 import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 
-import MenuItem from 'material-ui/MenuItem';
-import Menu from 'material-ui/Menu';
+import { getItem } from '../../actions/items';
 
-import loader from '../common/loader';
+import FlatButton from 'material-ui/FlatButton';
+
+import Loader from '../common/loader';
 
 import './GroupItems.sass';
 
-class GroupItems extends React.Component {
+
+@connect(null, { getItem })
+export default class GroupItems extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            loading: this.props.loading
+            loading: true
         };
     };
 
-    componentDidUpdate(prevProps, prevState) {
-        if(this.props.loading !== prevState.loading) {
-            this.setState({ loading: this.props.loading });
-        };
+    onClick = id => {
+        this.props.getItem(id)
     };
 
     render() {
 
+        const enter = {
+            from: {
+                transform: 'translateY(0)'
+            },
+            to: {
+                transform: 'translateY(100%)'
+            }
+        };
+
         const main = (
-            <Menu>
-                {this.props.items.map((item, i) =>
-                    <MenuItem
-                        key={i}
-                        primaryText={`${item.data.split(', ')[1].split(' ').slice(0, 3).join(' ')} ${item.title}`}
-                    />
-                )}
-            </Menu>
+            <div className="Menu" style={{ overflow: 'hidden' }}>
+
+                    {this.props.items.map((item, i) =>
+                        <div key={i}>
+                            <p>Date: {item.data.split(', ')[1].split(' ').slice(0, 3).join(' ')}</p>
+                        </div>
+                    )}
+
+            </div>
         );
 
         return (
-            <div className="GroupItems">
-                {this.state.loading ?
-                    loader :
-                    (
-                        this.props.items.length > 0 ?
-                            main :
-                            <div>No item for this group</div>
-                    )}
+            <div className='GroupItems'>
+                    {this.props.loading ? Loader :
+                        (this.props.items.length > 0 ? this.props.items.map((item, i) =>
+                            <FlatButton
+                                key={i}
+                                onClick={() => this.onClick(item.id)}
+                                children={
+                                    <div key={i} className="button">
+                                        <div className="wrap"><span>{item.data.split(', ')[1].split(' ').slice(0, 3).join(' ')}</span></div>
+                                        <div className="wrap"><span>{item.title}</span></div>
+                                        <div className="wrap"><span>{item.subtitle}</span></div>
+                                    </div>
+                                }
+                                fullWidth={true}
+                                style={{ display: 'block' }}
+                            />
+
+                        ) :
+                            <div style={{ textAlign: 'center', padding: 20 }}>No items</div>
+                        )
+                    }
 
             </div>
         );
     };
 };
-
-function mapState(state) {
-    return {
-        items: state.items || []
-    };
-};
-
-export default connect(mapState)(GroupItems);

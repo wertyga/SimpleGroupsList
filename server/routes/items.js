@@ -13,6 +13,14 @@ route.get('/', (req, res) => {
         .catch(err => res.status(400).json({ errors: 'Can\'t get group\'s items' }))
 });
 
+route.post('/item', (req, res) => {
+    const { id } = req.body;
+
+    axios.get(api.item(id))
+        .then(resp => res.json( resp.data.item ))
+        .catch(err => res.status(400).json({ errors: 'Can\'t get group\'s item' }))
+});
+
 
 
 export default route;

@@ -3,22 +3,12 @@ import { createSelector } from 'reselect';
 
 import { fetchGroups } from '../../actions/groups.js';
 
-import Loading from 'material-ui/CircularProgress';
-import {
-    Table,
-    TableBody,
-    TableHeader,
-    TableHeaderColumn,
-    TableRow,
-    TableRowColumn,
-} from 'material-ui/Table';
-import { List } from 'material-ui/List';
-import Menu from 'material-ui/Menu';
+
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 import Checkbox from 'material-ui/Checkbox';
 
-import ListItem from '../TableRow/TableRow';
+import ListItem from '../ListItem/ListItem';
 import loading from '../common/loader';
 
 import inlineStyles from '../../styles/inlineStyles';
@@ -31,59 +21,62 @@ class Groups extends React.Component {
 
         this.state = {
             isLoading: false,
-            selectItem: 0
+            selectItem: !localStorage.GroupsSelected ? 0 : localStorage.GroupsSelected
         };
     };
-    
+
     componentDidMount() {
         this.setState({
             isLoading: true
         });
         this.props.fetchGroups()
-            .then(() => this.setState({ isLoading: false }))
+            .then(() => {
+                this.setState({ isLoading: false });
+            })
             .catch(() => this.setState({ isLoading: false }))
+
     };
 
-    selectListItem = i => {
-        return this.state.selectItem === i;
+    setLocalStorage = () => {
+        localStorage.setItem('GroupsSelected', this.state.selectItem)
     };
 
-    onClickListItem = (id, i) => {
-        this.setState({ selectItem: i });
-
-        this.props.openListItem(id);
+    onClickListItem = async (id, i) => {
+        if(this.state.selectItem == i) {
+            await this.setState({ selectItem: 'none' });
+        } else {
+            await this.setState({ selectItem: i });
+        };
+        this.setLocalStorage();
     };
-    
+
     render() {
-        
+
         const main = (
             <div>
                 <MenuItem
                     primaryText="Name"
                     secondaryText="Count"
-                    // style={{ color: inlineStyles.fontColorFade }}
                     disabled={true}
                     leftIcon={<Checkbox disabled={true}/>}
                 />
                 <Divider style={{ width: '100%' }}/>
                 {this.props.groups.length > 0 ?
                     this.props.groups.map((item, i) =>
-                        <div key={i} className="listItem">
-                            <MenuItem
-                                primaryText={item.name}
-                                secondaryText={item.count +''}
-                                leftIcon={<Checkbox checked={this.state.selectItem === i}/>}
-                                onClick={(e) => this.onClickListItem(item.id, i)}
-                            />
-                            <Divider />
-                           
-                        </div>
+                        <ListItem
+                            id={item.id}
+                            key={i}
+                            name={item.name}
+                            count={item.count}
+                            checked={this.state.selectItem == i}
+                            onClick={() => this.onClickListItem(item.id, i)}
+                        />
                     ) : <div className="no-groups">No groups find</div>
                 }
             </div>
         );
 
-        
+
         return (
             <div className="Groups">
                 {this.state.isLoading ? loading : main}
@@ -94,12 +87,14 @@ class Groups extends React.Component {
 
 const GroupProps = createSelector(
     state => state.groups,
-    groups => groups
+    // state => state.item,
+    (groups, item) => groups
 );
 
 function mapState(state) {
     return {
-        groups: GroupProps(state) || []
+        groups: GroupProps(state) || [],
+        item: state.item
     }
 };
 

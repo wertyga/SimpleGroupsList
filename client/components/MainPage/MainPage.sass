@@ -1,6 +1,15 @@
 .MainPage
+  box-sizing: border-box
   min-height: 100vh
   padding-top: 5vh
+  position: relative
+  .content
+    position: absolute
+    width: 100%
+    display: flex
+    flex-wrap: wrap
+    overflow: auto
+    max-height: 66%
   .loading
     display: flex
     justify-content: center
@@ -9,6 +18,3 @@
     height: 100%
     p
       margin-top: 20px
-
-  h2
-    //border-left: 3px solid blue

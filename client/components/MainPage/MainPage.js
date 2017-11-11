@@ -4,7 +4,6 @@ import { createSelector } from 'reselect';
 import { getItemsGroup } from '../../actions/items';
 
 import Loader from 'material-ui/CircularProgress';
-import Divider from 'material-ui/Divider';
 
 import Groups from '../Groups/Groups';
 import GroupItems from '../GroupItems/GroupItems';
@@ -18,8 +17,6 @@ class MainPage extends React.Component {
         super(props);
 
         this.state = {
-            openListItems: false,
-            listItemsLoading: false,
             globalError: this.props.globalError
         };
     };
@@ -32,42 +29,30 @@ class MainPage extends React.Component {
         }
     };
 
-    openListItem = (id) => {
-        this.setState({ listItemsLoading: true });
-        this.props.getItemsGroup(id)
-            .then(() => this.setState({ listItemsLoading: false }))
-            .catch(() => this.setState({ listItemsLoading: false }))
-    };
 
     render() {
         return (
             <MuiThemeProvider>
                 <div className="MainPage">
                     <h2>Item collection list</h2>
-                    {this.state.globalError && <div className="error">{this.state.globalError}</div>}
-                    <div className="content">
-                        <Groups
-                            openListItem={this.openListItem}
-                        />
 
+                    {this.state.globalError && <div className="error">{this.state.globalError}</div>}
+
+                    <div className="content">
+                        <Groups />
                     </div>
 
-                    {this.state.openModal && <ModalItem />}
                 </div>
             </MuiThemeProvider>
         );
     }
 };
 
-const mainState = createSelector(
-    state => state.globalError,
-    globalError => globalError
-);
 
 function mapState(state) {
     return {
-        globalError: mainState(state)
+        globalError: state.globalError
     }
 };
 
-export default connect(mapState, { getItemsGroup })(MainPage);
+export default connect(mapState )(MainPage);
