@@ -1,10 +1,4 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
 import Media from 'react-responsive';
-
-import { getItemsGroup } from '../../actions/items';
-
-import FlipMove from 'react-flip-move';
 
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
@@ -22,19 +16,6 @@ class ListItem extends React.Component {
             loading: false
         };
     };
-
-    // componentDidUpdate(prevProps, prevState) {
-    //     if(this.props.checked !== prevProps.checked && this.props.checked) {
-    //         this.fetchItems();
-    //     }
-    // };
-    //
-    // componentDidMount() {
-    //     if(this.props.checked) {
-    //         this.fetchItems();
-    //     }
-    //
-    // };
 
     fetchItems = () => {
         this.setState({ loading: true });
@@ -59,7 +40,7 @@ class ListItem extends React.Component {
                 <Media maxWidth={1000}>
                     <div className='lists'>
                         <div className={this.props.checked ? 'listWrapper open' : 'listWrapper'}>
-                            {this.props.checked && <GroupItems loading={this.props.loadItems} items={this.props.items}/>}
+                            {this.props.checked && <GroupItems onClick={this.props.onClickToGetItem} loading={this.props.loadItems} items={this.props.items}/>}
                         </div>
                     </div>
                 </Media>
@@ -67,17 +48,6 @@ class ListItem extends React.Component {
         );
     }
 };
-
-// const Selector = createSelector(
-//     state => state.items,
-//     items => items
-// );
-//
-// function mapState(state) {
-//     return {
-//         items: Selector(state)
-//     }
-// };
 
 export default ListItem
 

@@ -1,0 +1,8 @@
+First production launch:
+    npm run build => npm run start:prod
+
+After launch production:
+    npm run start:prod
+
+Development launch:
+    npm run start:dev

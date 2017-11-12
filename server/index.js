@@ -1,18 +1,13 @@
 import express from 'express';
-import webpack from 'webpack';
-import webpackConfig from '../webpack.dev.config';
-import webpackHotMiddleware from 'webpack-hot-middleware';
-import webpackMiddleware from 'webpack-dev-middleware';
+
 import bodyParser from 'body-parser';
 
 import path from 'path';
 import cluster from 'cluster';
 import http from 'http';
-import axios from 'axios'
 
 import config from './common/config';
 const log = require('./common/log')(module);
-import api from './api';
 
 // ****************** Import routes *************
 
@@ -21,8 +16,7 @@ import items from './routes/items';
 
 //***********************************************
 
-const dev = true;
-
+const dev = process.env.NODE_ENV.trim() === 'development';
 
 const app = express();
 
@@ -46,6 +40,10 @@ if (dev ? false : cluster.isMaster) {
 
     //****************** Webpack ********************
     if(dev) {
+        const webpack = require('webpack');
+        const webpackConfig = require('../webpack.dev.config');
+        const webpackHotMiddleware = require('webpack-hot-middleware');
+        const webpackMiddleware = require('webpack-dev-middleware');
 
         const compiler = webpack(webpackConfig);
 
@@ -60,17 +58,7 @@ if (dev ? false : cluster.isMaster) {
     //**********************************************
 
     app.use(bodyParser.json());
-    // app.use(cookieParser());
-    // if(!dev) app.use(express.static(path.join(__dirname, '../', 'public')));
-    // app.use(express.static(path.join(__dirname, config.uploads.directory)));
-    // app.use(session({
-    //     secret: config.session.secret,
-    //     saveUninitialized: false,
-    //     resave: true,
-    //     key: config.session.key,
-    //     cookie: config.session.cookie,
-    //     store: sessionStore
-    // }));
+    if(!dev) app.use(express.static(path.join(__dirname, '..', 'client', 'static')));
 
     //************************* GARBAGE magic ***********************************
 

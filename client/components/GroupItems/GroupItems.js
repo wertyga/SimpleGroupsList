@@ -1,16 +1,9 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-
-import { getItem } from '../../actions/items';
-
 import FlatButton from 'material-ui/FlatButton';
 
 import Loader from '../common/loader';
 
 import './GroupItems.sass';
 
-
-@connect(null, { getItem })
 export default class GroupItems extends React.Component {
     constructor(props) {
         super(props);
@@ -21,7 +14,7 @@ export default class GroupItems extends React.Component {
     };
 
     onClick = id => {
-        this.props.getItem(id)
+        this.props.onClick(id)
     };
 
     render() {

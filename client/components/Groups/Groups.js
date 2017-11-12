@@ -4,6 +4,7 @@ import Media from 'react-responsive';
 
 import { fetchGroups } from '../../actions/groups.js';
 import { getItemsGroup } from '../../actions/items.js';
+import { getItem } from '../../actions/items.js';
 
 
 import MenuItem from 'material-ui/MenuItem';
@@ -13,8 +14,8 @@ import Checkbox from 'material-ui/Checkbox';
 import ListItem from '../ListItem/ListItem';
 import GroupItems from '../GroupItems/GroupItems';
 import loading from '../common/loader';
+import DialogWindow from '../DialogWindow/DialogWindow';
 
-import inlineStyles from '../../styles/inlineStyles';
 import './Groups.sass';
 
 
@@ -25,7 +26,9 @@ class Groups extends React.Component {
         this.state = {
             isLoading: false,
             loadItems: false,
-            selectItem: localStorage.GroupsSelected && localStorage.GroupsSelected
+            selectItem: localStorage.GroupsSelected && localStorage.GroupsSelected,
+            openDialog: false,
+            dialogLoading: false
         };
     };
 
@@ -41,8 +44,11 @@ class Groups extends React.Component {
                 };
                 this.setState({ isLoading: false });
                 this.fetchItems(this.state.selectItem);
-            })
-            .catch(() => this.setState({ isLoading: false }))
+
+            }).then(() => this.heightEqual())
+            .catch(() => this.setState({ isLoading: false }));
+
+        window.addEventListener('resize', this.heightEqual);
 
     };
 
@@ -65,6 +71,33 @@ class Groups extends React.Component {
         this.props.getItemsGroup(id)
             .then(() => this.setState({ loadItems: false }))
             .catch(() => this.setState({ loadItems: false }))
+    };
+
+    heightEqual = () => {
+        if(window.innerWidth > 1000) {
+            const [groupsMain, largeScreen] = [this.refs.groupsMain, this.refs.largeScreen];
+
+            largeScreen.style.height = groupsMain.offsetHeight + 'px'
+        }
+    };
+
+    closeDialog = () => {
+        this.setState({
+            openDialog: false
+        });
+    };
+
+    openDialog = () => {
+        this.setState({
+            openDialog: true
+        });
+    };
+
+    onClickToGetItem = id => {
+        this.setState({ dialogLoading: true, openDialog: true });
+        this.props.getItem(id)
+            .then(() => this.setState({ dialogLoading: false }))
+            .catch(() => this.setState({ dialogLoading: false, openDialog: false }))
     };
 
     render() {
@@ -90,6 +123,7 @@ class Groups extends React.Component {
                                 checked={this.state.selectItem === item.id}
                                 onClick={() => this.onClickListItem(item.id, i)}
                                 loadItems={this.state.loadItems}
+                                onClickToGetItem={this.onClickToGetItem}
                             />
                         ) : <div className="no-groups">No groups find</div>
                     }
@@ -97,9 +131,16 @@ class Groups extends React.Component {
 
                     <Media minWidth={1001}>
                         <div className="largeScreen" ref="largeScreen">
-                            {this.state.selectItem !== 'none' &&  <GroupItems loading={this.state.loadItems} items={this.props.items}/>}
+                            {this.state.selectItem !== 'none' &&  <GroupItems onClick={this.onClickToGetItem} loading={this.state.loadItems} items={this.props.items}/>}
                         </div>
                     </Media>
+
+                <DialogWindow
+                    item={this.props.item}
+                    openDialog={this.state.openDialog}
+                    closeDialog={this.closeDialog}
+                    loading={this.state.dialogLoading}
+                />
 
             </div>
         );
@@ -115,16 +156,23 @@ class Groups extends React.Component {
 
 const GroupProps = createSelector(
     state => state.groups,
-    // state => state.item,
-    (groups, item) => groups
+    groups => groups
+);
+const ItemsProps = createSelector(
+    state => state.items,
+    (items) => items
+);
+const ItemProps = createSelector(
+    state => state.item,
+    (item) => item
 );
 
 function mapState(state) {
     return {
         groups: GroupProps(state) || [],
-        item: state.item,
-        items: state.items
+        item: ItemProps(state),
+        items: ItemsProps(state)
     }
 };
 
-export default connect(mapState, { fetchGroups, getItemsGroup })(Groups);
+export default connect(mapState, { fetchGroups, getItemsGroup, getItem })(Groups);

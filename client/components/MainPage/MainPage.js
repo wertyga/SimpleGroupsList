@@ -1,13 +1,6 @@
 import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-
-import { getItemsGroup } from '../../actions/items';
-
-import Loader from 'material-ui/CircularProgress';
 
 import Groups from '../Groups/Groups';
-import GroupItems from '../GroupItems/GroupItems';
-import ModalItem from '../ModalItem/ModalItem';
 
 import './MainPage.sass';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
